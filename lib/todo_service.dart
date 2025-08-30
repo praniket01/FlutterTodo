@@ -20,11 +20,10 @@ class Todo {
 }
 
 class TodoService {
-  static const String baseUrl = "http://10.0.2.2:3000"; // 👈 backend URL
-
+  static const String baseUrl = "http://10.0.2.2:3000"; 
   // Fetch all todos
   static Future<List<Todo>> getTodos() async {
-    final response = await http.get(Uri.parse('$baseUrl'));
+    final response = await http.get(Uri.parse(baseUrl));
     if (response.statusCode == 200) {
       List jsonData = json.decode(response.body);
       return jsonData.map((todo) => Todo.fromJson(todo)).toList();
@@ -36,7 +35,7 @@ class TodoService {
   // Add a new todo
   static Future<Todo> createTodo(String title, String description) async {
     final response = await http.post(
-      Uri.parse('$baseUrl'),
+      Uri.parse(baseUrl),
       headers: {"Content-Type": "application/json"},
       body: json.encode({
         "title": title,
@@ -50,4 +49,16 @@ class TodoService {
       throw Exception("Failed to create todo");
     }
   }
+
+  // Delete a todo
+  static Future<void> deleteTodo(Todo todo) async {
+    final response = await http.delete(
+      Uri.parse("$baseUrl/${todo.id}"),
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode != 204) {
+      throw Exception("Failed to delete todo");
+    }
+  }
+
 }

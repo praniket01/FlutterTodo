@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todos/todo_service.dart'; // <-- Your API service
 
 class TodosHomepage extends StatefulWidget {
-  const TodosHomepage({Key? key}) : super(key: key);
+  const TodosHomepage({super.key});
 
   @override
   State<TodosHomepage> createState() => _TodosHomepageState();
@@ -27,12 +27,23 @@ class _TodosHomepageState extends State<TodosHomepage> {
     showDialog(
       context: context,
       builder: (context) {
-        final TextEditingController _controller = TextEditingController();
+        final TextEditingController controller = TextEditingController();
+        final TextEditingController anotherController = TextEditingController();
         return AlertDialog(
           title: const Text('Add Task'),
-          content: TextField(
-            controller: _controller,
-            decoration: const InputDecoration(hintText: 'Enter your task'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(hintText: 'Enter your task'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: anotherController,
+                decoration: const InputDecoration(hintText: 'Enter task description'),
+              )
+            ],
           ),
           actions: [
             TextButton(
@@ -41,10 +52,11 @@ class _TodosHomepageState extends State<TodosHomepage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                if (_controller.text.isNotEmpty) {
+                if (controller.text.isNotEmpty) {
                   await TodoService.createTodo(
-                    _controller.text,
-                    "Added from Flutter", // optional
+                    controller.text,
+                    anotherController.text, 
+                    // optional
                   );
                   Navigator.pop(context);
                   _refreshTodos(); // refresh list
@@ -105,10 +117,11 @@ class _TodosHomepageState extends State<TodosHomepage> {
                   child: ListTile(
                     leading: const Icon(Icons.check_circle_outline),
                     title: Text(todos[index].title), // Assuming Todo has a 'title' property
+                    subtitle: Text(todos[index].description ?? ''),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
-                        // await TodoService.deleteTodo(todos[index]);
+                        await TodoService.deleteTodo(todos[index]);
                         _refreshTodos();
                       },
                     ),
