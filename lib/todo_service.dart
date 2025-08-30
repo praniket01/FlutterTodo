@@ -20,7 +20,7 @@ class Todo {
 }
 
 class TodoService {
-  static const String baseUrl = "http://10.0.2.2:3000"; 
+  static const String baseUrl = "https://fluttertodo.onrender.com/"; 
   // Fetch all todos
   static Future<List<Todo>> getTodos() async {
     final response = await http.get(Uri.parse(baseUrl));
